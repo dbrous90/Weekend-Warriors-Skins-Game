@@ -179,6 +179,19 @@ h1{
   line-height:1;
 }
 .step-btn:active{background:var(--turf-light);}
+.sign-btn{
+  width:34px;
+  flex-shrink:0;
+  border:1px solid var(--scorecard-line);
+  background:var(--scorecard);
+  color:var(--owe);
+  font-size:15px;
+  font-weight:700;
+  border-radius:6px;
+  cursor:pointer;
+  line-height:1;
+}
+.sign-btn:active{background:var(--owe-bg);}
 
 .net-line{
   display:flex;justify-content:space-between;align-items:baseline;
@@ -381,7 +394,9 @@ h1{
   }
 
   function toCents(dollars){
-    return Math.round(parseFloat(dollars || 0) * 100);
+    var n = parseFloat(dollars);
+    if(isNaN(n)) n = 0;
+    return Math.round(n * 100);
   }
 
   function computeNets(){
@@ -450,7 +465,7 @@ h1{
         '</div>' +
         '<div class="field-row">' +
           '<div class="field"><label>Skins won</label><div class="stepper"><button type="button" class="step-btn" data-id="' + p.id + '" data-dir="-1" aria-label="Subtract one skin">&minus;</button><input type="text" inputmode="numeric" value="' + p.skins + '" data-id="' + p.id + '" data-field="skins"><button type="button" class="step-btn" data-id="' + p.id + '" data-dir="1" aria-label="Add one skin">+</button></div></div>' +
-          '<div class="field"><label>Extras ($)</label><input type="text" inputmode="decimal" value="' + p.extras + '" data-id="' + p.id + '" data-field="extras"></div>' +
+          '<div class="field"><label>Extras ($)</label><div class="stepper"><button type="button" class="sign-btn" data-id="' + p.id + '" aria-label="Switch between owed and owes">&plusmn;</button><input type="text" inputmode="decimal" value="' + p.extras + '" data-id="' + p.id + '" data-field="extras"></div></div>' +
         '</div>' +
         '<div class="net-line"><span class="lbl">' + netLabel + '</span><span class="net-val ' + netClass + '">' + fmt(Math.abs(net)) + '</span></div>';
       playerList.appendChild(div);
@@ -612,6 +627,21 @@ h1{
       if(pl){
         var cur = parseInt(pl.skins) || 0;
         pl.skins = Math.max(0, cur + dir);
+        render();
+        scheduleSave();
+      }
+    } else if(e.target.classList.contains('sign-btn')){
+      var sid = e.target.getAttribute('data-id');
+      var splayer = state.players.find(function(x){return x.id === sid;});
+      if(splayer){
+        var raw = (splayer.extras || '').toString();
+        if(raw.charAt(0) === '-'){
+          splayer.extras = raw.slice(1);
+        } else if(raw === '' || raw === '0'){
+          splayer.extras = '-';
+        } else {
+          splayer.extras = '-' + raw;
+        }
         render();
         scheduleSave();
       }
