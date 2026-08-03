@@ -363,7 +363,20 @@ h1{
   }
 
   function render(){
-    priceInput.value = state.pricePerHole;
+    var active = document.activeElement;
+    var focusInfo = null;
+    if(active && playerList.contains(active)){
+      focusInfo = {
+        id: active.getAttribute('data-id'),
+        field: active.getAttribute('data-field'),
+        start: active.selectionStart,
+        end: active.selectionEnd
+      };
+    }
+
+    if(document.activeElement !== priceInput){
+      priceInput.value = state.pricePerHole;
+    }
     var nets = computeNets();
     var netMap = {};
     nets.forEach(function(x){netMap[x.id] = x.netCents;});
@@ -406,6 +419,17 @@ h1{
       });
     }
     renderHistory();
+
+    if(focusInfo && focusInfo.id){
+      var selector = '[data-id="' + focusInfo.id + '"][data-field="' + focusInfo.field + '"]';
+      var toFocus = playerList.querySelector(selector);
+      if(toFocus){
+        toFocus.focus();
+        if(typeof focusInfo.start === 'number' && toFocus.type !== 'number'){
+          try{ toFocus.setSelectionRange(focusInfo.start, focusInfo.end); }catch(e){}
+        }
+      }
+    }
   }
 
   function escapeHtml(str){
