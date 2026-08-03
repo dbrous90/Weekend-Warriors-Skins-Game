@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Skins Settle-Up</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap');
+
+:root{
+  --fairway-dark:#173B2E;
+  --fairway:#2D6A4F;
+  --turf-light:#B7E4C7;
+  --scorecard:#F7F5ED;
+  --scorecard-line:#DAD5C4;
+  --ink:#1B2A22;
+  --ink-soft:#5B6B60;
+  --owe:#AD3A2C;
+  --owe-bg:#F7E6E2;
+  --owed:#1E6B4D;
+  --owed-bg:#E4F1E8;
+  --gold:#B8912E;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--fairway-dark);
+  background-image:
+    repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 26px, transparent 26px, transparent 52px);
+  font-family:'Inter',sans-serif;
+  color:var(--ink);
+  min-height:100vh;
+  padding:20px 12px 60px;
+}
+
+.wrap{max-width:480px;margin:0 auto;}
+
+.card{
+  background:var(--scorecard);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 12px 30px rgba(0,0,0,0.28);
+}
+
+.masthead{
+  background:var(--fairway);
+  color:#fff;
+  padding:22px 20px 18px;
+  position:relative;
+}
+.masthead .stripe{
+  position:absolute; left:0; right:0; bottom:0; height:6px;
+  background:repeating-linear-gradient(90deg, var(--turf-light) 0 14px, var(--fairway-dark) 14px 28px);
+  opacity:0.55;
+}
+.eyebrow{
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--turf-light);
+  margin:0 0 2px;
+}
+h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:34px;
+  letter-spacing:0.03em;
+  margin:0;
+  line-height:1;
+}
+.sub{
+  font-size:13px;
+  color:rgba(255,255,255,0.82);
+  margin:6px 0 0;
+}
+
+.section{padding:18px 20px;border-bottom:1px dashed var(--scorecard-line);}
+.section:last-child{border-bottom:none;}
+
+.section-label{
+  font-family:'Space Mono',monospace;
+  font-size:11px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin:0 0 10px;
+}
+
+.price-row{display:flex;align-items:center;gap:10px;}
+.price-row .dollar{font-family:'Space Mono',monospace;font-size:20px;color:var(--ink-soft);}
+.price-row input{
+  font-family:'Space Mono',monospace;
+  font-size:20px;
+  font-weight:700;
+  border:none;
+  border-bottom:2px solid var(--fairway);
+  background:transparent;
+  width:90px;
+  padding:4px 2px;
+  color:var(--ink);
+  outline:none;
+}
+.price-row span.hint{font-size:12px;color:var(--ink-soft);}
+
+.player-card{
+  background:#fff;
+  border:1px solid var(--scorecard-line);
+  border-radius:10px;
+  padding:12px 14px;
+  margin-bottom:10px;
+}
+.player-top{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.player-top input[type=text]{
+  flex:1;
+  font-family:'Inter',sans-serif;
+  font-weight:600;
+  font-size:15px;
+  border:none;
+  border-bottom:1px solid var(--scorecard-line);
+  padding:5px 2px;
+  outline:none;
+  background:transparent;
+  color:var(--ink);
+}
+.player-top input[type=text]:focus{border-bottom-color:var(--fairway);}
+.remove-btn{
+  background:none;border:none;color:var(--ink-soft);
+  font-size:18px;line-height:1;cursor:pointer;padding:4px 6px;
+  border-radius:6px;
+}
+.remove-btn:hover{background:var(--owe-bg);color:var(--owe);}
+
+.field-row{display:flex;gap:10px;}
+.field{flex:1;}
+.field label{
+  display:block;font-size:11px;color:var(--ink-soft);
+  font-family:'Space Mono',monospace;letter-spacing:0.06em;
+  text-transform:uppercase;margin-bottom:3px;
+}
+.field input{
+  width:100%;
+  font-family:'Space Mono',monospace;
+  font-size:15px;
+  border:1px solid var(--scorecard-line);
+  border-radius:6px;
+  padding:7px 8px;
+  outline:none;
+  background:var(--scorecard);
+  color:var(--ink);
+}
+.field input:focus{border-color:var(--fairway);}
+
+.net-line{
+  display:flex;justify-content:space-between;align-items:baseline;
+  margin-top:10px;padding-top:8px;border-top:1px dashed var(--scorecard-line);
+}
+.net-line .lbl{font-size:12px;color:var(--ink-soft);}
+.net-val{font-family:'Space Mono',monospace;font-weight:700;font-size:16px;}
+.net-val.pos{color:var(--owed);}
+.net-val.neg{color:var(--owe);}
+.net-val.zero{color:var(--ink-soft);}
+
+.add-player{
+  width:100%;
+  background:none;
+  border:1.5px dashed var(--fairway);
+  color:var(--fairway);
+  font-family:'Inter',sans-serif;
+  font-weight:600;
+  font-size:14px;
+  padding:11px;
+  border-radius:10px;
+  cursor:pointer;
+}
+.add-player:hover{background:var(--turf-light);}
+
+.ticket{
+  background:#fff;
+  border:1px solid var(--scorecard-line);
+  border-radius:10px;
+  padding:4px 0;
+}
+.ticket-row{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 16px;
+  border-bottom:1px dashed var(--scorecard-line);
+  font-size:14px;
+}
+.ticket-row:last-child{border-bottom:none;}
+.ticket-row .flag{color:var(--gold);font-size:14px;}
+.ticket-row .who{flex:1;font-weight:600;}
+.ticket-row .arrow{color:var(--ink-soft);}
+.ticket-row .amt{font-family:'Space Mono',monospace;font-weight:700;color:var(--fairway-dark);}
+.settled-msg{
+  text-align:center;padding:20px 10px;color:var(--ink-soft);font-size:14px;
+}
+
+.actions{display:flex;gap:10px;}
+.btn{
+  flex:1;
+  font-family:'Inter',sans-serif;
+  font-weight:600;
+  font-size:14px;
+  padding:12px;
+  border-radius:10px;
+  cursor:pointer;
+  border:none;
+}
+.btn-primary{background:var(--fairway);color:#fff;}
+.btn-primary:hover{background:var(--fairway-dark);}
+.btn-ghost{background:none;border:1px solid var(--scorecard-line);color:var(--ink-soft);}
+.btn-ghost:hover{border-color:var(--owe);color:var(--owe);}
+
+.history-toggle{
+  width:100%;background:none;border:none;
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--ink-soft);cursor:pointer;padding:0;
+}
+.history-toggle .chev{transition:transform 0.2s;}
+.history-toggle.open .chev{transform:rotate(90deg);}
+.history-list{margin-top:12px;display:none;}
+.history-list.open{display:block;}
+.history-item{
+  background:#fff;border:1px solid var(--scorecard-line);border-radius:8px;
+  padding:10px 12px;margin-bottom:8px;
+}
+.history-item .hdr{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:4px;}
+.history-item .hdr .date{color:var(--ink-soft);font-weight:400;font-family:'Space Mono',monospace;font-size:12px;}
+.history-item .htx{font-size:13px;color:var(--ink-soft);line-height:1.5;}
+.history-empty{font-size:13px;color:var(--ink-soft);text-align:center;padding:10px;}
+
+.save-note{
+  font-size:11px;color:var(--ink-soft);text-align:center;margin-top:10px;
+}
+.status{
+  font-size:11px;color:var(--ink-soft);text-align:center;margin-top:6px;
+  min-height:14px;
+}
+
+.footer-note{
+  text-align:center;color:rgba(255,255,255,0.55);font-size:11px;margin-top:16px;padding:0 10px;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="masthead">
+      <p class="eyebrow">Weekend skins game</p>
+      <h1>Settle-Up</h1>
+      <p class="sub">Fewest payments, fastest payout.</p>
+      <div class="stripe"></div>
+    </div>
+
+    <div class="section">
+      <p class="section-label">Price per player, per hole</p>
+      <div class="price-row">
+        <span class="dollar">$</span>
+        <input id="priceInput" type="number" inputmode="decimal" min="0" step="0.25" value="2.00">
+        <span class="hint">standard is $2.00</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <p class="section-label">Players</p>
+      <div id="playerList"></div>
+      <button class="add-player" id="addPlayerBtn">+ Add player</button>
+    </div>
+
+    <div class="section">
+      <p class="section-label">Settlement — who pays who</p>
+      <div class="ticket" id="ticket"></div>
+    </div>
+
+    <div class="section">
+      <div class="actions">
+        <button class="btn btn-primary" id="saveWeekBtn">Save this week</button>
+        <button class="btn btn-ghost" id="clearBtn">Clear round</button>
+      </div>
+      <p class="status" id="statusMsg"></p>
+    </div>
+
+    <div class="section">
+      <button class="history-toggle" id="historyToggle">
+        <span>Past weeks</span>
+        <span class="chev">&#8250;</span>
+      </button>
+      <div class="history-list" id="historyList"></div>
+    </div>
+  </div>
+
+  <p class="footer-note">Shared with everyone who opens this link — anyone in the group can enter scores or view results.</p>
+</div>
+
+<script>
+(function(){
+  var state = {
+    pricePerHole: 2.00,
+    players: [
+      {id:'p1', name:'Player 1', skins:0, extras:0},
+      {id:'p2', name:'Player 2', skins:0, extras:0},
+      {id:'p3', name:'Player 3', skins:0, extras:0},
+      {id:'p4', name:'Player 4', skins:0, extras:0}
+    ]
+  };
+  var history = [];
+  var saveTimer = null;
+  var idCounter = 5;
+
+  var priceInput = document.getElementById('priceInput');
+  var playerList = document.getElementById('playerList');
+  var ticket = document.getElementById('ticket');
+  var addPlayerBtn = document.getElementById('addPlayerBtn');
+  var saveWeekBtn = document.getElementById('saveWeekBtn');
+  var clearBtn = document.getElementById('clearBtn');
+  var statusMsg = document.getElementById('statusMsg');
+  var historyToggle = document.getElementById('historyToggle');
+  var historyList = document.getElementById('historyList');
+
+  function fmt(cents){
+    var neg = cents < 0;
+    var v = (Math.abs(cents)/100).toFixed(2);
+    return (neg ? '-$' : '$') + v;
+  }
+
+  function toCents(dollars){
+    return Math.round(parseFloat(dollars || 0) * 100);
+  }
+
+  function computeNets(){
+    var priceCents = toCents(state.pricePerHole);
+    var n = state.players.length;
+    var totalSkins = state.players.reduce(function(s,p){return s + (parseInt(p.skins)||0);}, 0);
+    return state.players.map(function(p){
+      var skins = parseInt(p.skins) || 0;
+      var extrasCents = toCents(p.extras);
+      var base = skins * priceCents * (n-1) - (totalSkins - skins) * priceCents;
+      return {id:p.id, name:p.name, netCents: base + extrasCents};
+    });
+  }
+
+  function computeSettlements(nets){
+    var creditors = nets.filter(function(x){return x.netCents > 0;}).map(function(x){return {name:x.name, amt:x.netCents};});
+    var debtors = nets.filter(function(x){return x.netCents < 0;}).map(function(x){return {name:x.name, amt:-x.netCents};});
+    creditors.sort(function(a,b){return b.amt - a.amt;});
+    debtors.sort(function(a,b){return b.amt - a.amt;});
+    var settlements = [];
+    var ci = 0, di = 0;
+    while(ci < creditors.length && di < debtors.length){
+      var c = creditors[ci], d = debtors[di];
+      var amt = Math.min(c.amt, d.amt);
+      if(amt > 0){
+        settlements.push({from:d.name, to:c.name, amtCents:amt});
+      }
+      c.amt -= amt;
+      d.amt -= amt;
+      if(c.amt <= 0) ci++;
+      if(d.amt <= 0) di++;
+    }
+    return settlements;
+  }
+
+  function render(){
+    priceInput.value = state.pricePerHole;
+    var nets = computeNets();
+    var netMap = {};
+    nets.forEach(function(x){netMap[x.id] = x.netCents;});
+
+    playerList.innerHTML = '';
+    state.players.forEach(function(p, idx){
+      var net = netMap[p.id] || 0;
+      var netClass = net > 0 ? 'pos' : (net < 0 ? 'neg' : 'zero');
+      var netLabel = net > 0 ? 'Gets back' : (net < 0 ? 'Owes' : 'Even');
+      var div = document.createElement('div');
+      div.className = 'player-card';
+      div.innerHTML =
+        '<div class="player-top">' +
+          '<input type="text" value="' + escapeHtml(p.name) + '" data-id="' + p.id + '" data-field="name">' +
+          (state.players.length > 1 ? '<button class="remove-btn" data-id="' + p.id + '" title="Remove player">&times;</button>' : '') +
+        '</div>' +
+        '<div class="field-row">' +
+          '<div class="field"><label>Skins won</label><input type="number" inputmode="numeric" min="0" step="1" value="' + p.skins + '" data-id="' + p.id + '" data-field="skins"></div>' +
+          '<div class="field"><label>Extras ($)</label><input type="number" inputmode="decimal" step="0.5" value="' + p.extras + '" data-id="' + p.id + '" data-field="extras"></div>' +
+        '</div>' +
+        '<div class="net-line"><span class="lbl">' + netLabel + '</span><span class="net-val ' + netClass + '">' + fmt(Math.abs(net)) + '</span></div>';
+      playerList.appendChild(div);
+    });
+
+    var settlements = computeSettlements(nets);
+    ticket.innerHTML = '';
+    if(settlements.length === 0){
+      ticket.innerHTML = '<div class="settled-msg">Nothing to settle — everyone&rsquo;s even.</div>';
+    } else {
+      settlements.forEach(function(s){
+        var row = document.createElement('div');
+        row.className = 'ticket-row';
+        row.innerHTML =
+          '<span class="flag">&#9873;</span>' +
+          '<span class="who">' + escapeHtml(s.from) + '</span>' +
+          '<span class="arrow">pays</span>' +
+          '<span class="who">' + escapeHtml(s.to) + '</span>' +
+          '<span class="amt">' + fmt(s.amtCents) + '</span>';
+        ticket.appendChild(row);
+      });
+    }
+    renderHistory();
+  }
+
+  function escapeHtml(str){
+    var d = document.createElement('div');
+    d.textContent = str == null ? '' : str;
+    return d.innerHTML;
+  }
+
+  function renderHistory(){
+    if(history.length === 0){
+      historyList.innerHTML = '<div class="history-empty">No saved weeks yet.</div>';
+      return;
+    }
+    historyList.innerHTML = '';
+    history.forEach(function(round){
+      var div = document.createElement('div');
+      div.className = 'history-item';
+      var lines = round.settlements.length === 0
+        ? 'Everyone was even.'
+        : round.settlements.map(function(s){ return escapeHtml(s.from) + ' pays ' + escapeHtml(s.to) + ' ' + fmt(s.amtCents); }).join('<br>');
+      div.innerHTML =
+        '<div class="hdr"><span>$' + Number(round.pricePerHole).toFixed(2) + ' / hole</span><span class="date">' + escapeHtml(round.date) + '</span></div>' +
+        '<div class="htx">' + lines + '</div>';
+      historyList.appendChild(div);
+    });
+  }
+
+  function setStatus(msg){
+    statusMsg.textContent = msg;
+    if(msg){
+      setTimeout(function(){ if(statusMsg.textContent === msg) statusMsg.textContent = ''; }, 2500);
+    }
+  }
+
+  function scheduleSave(){
+    if(saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveCurrentRound, 700);
+  }
+
+  async function saveCurrentRound(){
+    try{
+      await window.storage.set('current-round', JSON.stringify(state), true);
+    } catch(e){
+      setStatus('Could not save — check your connection.');
+    }
+  }
+
+  async function loadCurrentRound(){
+    try{
+      var res = await window.storage.get('current-round', true);
+      if(res && res.value){
+        var parsed = JSON.parse(res.value);
+        if(parsed && Array.isArray(parsed.players) && parsed.players.length){
+          state = parsed;
+        }
+      }
+    } catch(e){
+      /* no saved round yet, use defaults */
+    }
+  }
+
+  async function loadHistory(){
+    try{
+      var res = await window.storage.get('history', true);
+      if(res && res.value){
+        var parsed = JSON.parse(res.value);
+        if(Array.isArray(parsed)) history = parsed;
+      }
+    } catch(e){
+      history = [];
+    }
+  }
+
+  async function saveHistory(){
+    try{
+      await window.storage.set('history', JSON.stringify(history), true);
+    } catch(e){
+      setStatus('Could not save week to history.');
+    }
+  }
+
+  playerList.addEventListener('input', function(e){
+    var id = e.target.getAttribute('data-id');
+    var field = e.target.getAttribute('data-field');
+    if(!id || !field) return;
+    var p = state.players.find(function(x){return x.id === id;});
+    if(!p) return;
+    p[field] = e.target.value;
+    render();
+    scheduleSave();
+  });
+
+  playerList.addEventListener('click', function(e){
+    if(e.target.classList.contains('remove-btn')){
+      var id = e.target.getAttribute('data-id');
+      state.players = state.players.filter(function(x){return x.id !== id;});
+      render();
+      scheduleSave();
+    }
+  });
+
+  addPlayerBtn.addEventListener('click', function(){
+    state.players.push({id:'p' + (idCounter++), name:'Player ' + state.players.length, skins:0, extras:0});
+    render();
+    scheduleSave();
+  });
+
+  priceInput.addEventListener('input', function(){
+    state.pricePerHole = priceInput.value;
+    render();
+    scheduleSave();
+  });
+
+  saveWeekBtn.addEventListener('click', async function(){
+    var nets = computeNets();
+    var settlements = computeSettlements(nets);
+    var round = {
+      id: Date.now(),
+      date: new Date().toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'}),
+      pricePerHole: state.pricePerHole,
+      players: state.players.map(function(p){ return {name:p.name, skins:p.skins, extras:p.extras}; }),
+      settlements: settlements
+    };
+    history.unshift(round);
+    if(history.length > 30) history = history.slice(0, 30);
+    state.players = state.players.map(function(p){ return {id:p.id, name:p.name, skins:0, extras:0}; });
+    await saveHistory();
+    await saveCurrentRound();
+    render();
+    setStatus('Week saved. Skins reset for next round.');
+  });
+
+  clearBtn.addEventListener('click', function(){
+    if(!confirm('Clear this round\'s skins and extras? Player names stay.')) return;
+    state.players = state.players.map(function(p){ return {id:p.id, name:p.name, skins:0, extras:0}; });
+    render();
+    scheduleSave();
+  });
+
+  historyToggle.addEventListener('click', function(){
+    historyToggle.classList.toggle('open');
+    historyList.classList.toggle('open');
+  });
+
+  (async function init(){
+    await loadCurrentRound();
+    await loadHistory();
+    render();
+  })();
+})();
+</script>
+</body>
+</html>
