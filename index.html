@@ -365,10 +365,10 @@ h1{
     pricePerHole: 2.00,
     paid: {},
     players: [
-      {id:'p1', name:'Player 1', skins:0, extras:0},
-      {id:'p2', name:'Player 2', skins:0, extras:0},
-      {id:'p3', name:'Player 3', skins:0, extras:0},
-      {id:'p4', name:'Player 4', skins:0, extras:0}
+      {id:'p1', name:'', skins:'', extras:''},
+      {id:'p2', name:'', skins:'', extras:''},
+      {id:'p3', name:'', skins:'', extras:''},
+      {id:'p4', name:'', skins:'', extras:''}
     ]
   };
   var history = [];
@@ -403,11 +403,12 @@ h1{
     var priceCents = toCents(state.pricePerHole);
     var n = state.players.length;
     var totalSkins = state.players.reduce(function(s,p){return s + (parseInt(p.skins)||0);}, 0);
-    return state.players.map(function(p){
+    return state.players.map(function(p, idx){
       var skins = parseInt(p.skins) || 0;
       var extrasCents = toCents(p.extras);
       var base = skins * priceCents * (n-1) - (totalSkins - skins) * priceCents;
-      return {id:p.id, name:p.name, netCents: base + extrasCents};
+      var displayName = (p.name && p.name.trim()) ? p.name.trim() : ('Player ' + (idx+1));
+      return {id:p.id, name:displayName, netCents: base + extrasCents};
     });
   }
 
@@ -456,16 +457,17 @@ h1{
       var net = netMap[p.id] || 0;
       var netClass = net > 0 ? 'pos' : (net < 0 ? 'neg' : 'zero');
       var netLabel = net > 0 ? 'Gets back' : (net < 0 ? 'Owes' : 'Even');
+      var displayName = (p.name && p.name.trim()) ? p.name.trim() : ('Player ' + (idx+1));
       var div = document.createElement('div');
       div.className = 'player-card';
       div.innerHTML =
         '<div class="player-top">' +
-          '<input type="text" value="' + escapeHtml(p.name) + '" data-id="' + p.id + '" data-field="name">' +
+          '<input type="text" value="' + escapeHtml(p.name) + '" placeholder="' + escapeHtml(displayName) + '" data-id="' + p.id + '" data-field="name">' +
           (state.players.length > 1 ? '<button class="remove-btn" data-id="' + p.id + '" title="Remove player">&times;</button>' : '') +
         '</div>' +
         '<div class="field-row">' +
-          '<div class="field"><label>Skins won</label><div class="stepper"><button type="button" class="step-btn" data-id="' + p.id + '" data-dir="-1" aria-label="Subtract one skin">&minus;</button><input type="text" inputmode="numeric" value="' + p.skins + '" data-id="' + p.id + '" data-field="skins"><button type="button" class="step-btn" data-id="' + p.id + '" data-dir="1" aria-label="Add one skin">+</button></div></div>' +
-          '<div class="field"><label>Extras ($)</label><div class="stepper"><button type="button" class="sign-btn" data-id="' + p.id + '" aria-label="Switch between owed and owes">&plusmn;</button><input type="text" inputmode="decimal" value="' + p.extras + '" data-id="' + p.id + '" data-field="extras"></div></div>' +
+          '<div class="field"><label>Skins won</label><div class="stepper"><button type="button" class="step-btn" data-id="' + p.id + '" data-dir="-1" aria-label="Subtract one skin">&minus;</button><input type="text" inputmode="numeric" value="' + escapeHtml(p.skins) + '" placeholder="0" data-id="' + p.id + '" data-field="skins"><button type="button" class="step-btn" data-id="' + p.id + '" data-dir="1" aria-label="Add one skin">+</button></div></div>' +
+          '<div class="field"><label>Extras ($)</label><div class="stepper"><button type="button" class="sign-btn" data-id="' + p.id + '" aria-label="Switch between owed and owes">&plusmn;</button><input type="text" inputmode="decimal" value="' + escapeHtml(p.extras) + '" placeholder="0" data-id="' + p.id + '" data-field="extras"></div></div>' +
         '</div>' +
         '<div class="net-line"><span class="lbl">' + netLabel + '</span><span class="net-val ' + netClass + '">' + fmt(Math.abs(net)) + '</span></div>';
       playerList.appendChild(div);
@@ -687,7 +689,7 @@ h1{
   });
 
   addPlayerBtn.addEventListener('click', function(){
-    state.players.push({id:'p' + (idCounter++), name:'Player ' + state.players.length, skins:0, extras:0});
+    state.players.push({id:'p' + (idCounter++), name:'', skins:'', extras:''});
     render();
     scheduleSave();
   });
@@ -710,7 +712,7 @@ h1{
     };
     history.unshift(round);
     if(history.length > 30) history = history.slice(0, 30);
-    state.players = state.players.map(function(p){ return {id:p.id, name:p.name, skins:0, extras:0}; });
+    state.players = state.players.map(function(p){ return {id:p.id, name:p.name, skins:'', extras:''}; });
     state.paid = {};
     await saveHistory();
     await saveCurrentRound();
@@ -720,7 +722,7 @@ h1{
 
   clearBtn.addEventListener('click', function(){
     if(!confirm('Clear this round\'s skins and extras? Player names stay.')) return;
-    state.players = state.players.map(function(p){ return {id:p.id, name:p.name, skins:0, extras:0}; });
+    state.players = state.players.map(function(p){ return {id:p.id, name:p.name, skins:'', extras:''}; });
     state.paid = {};
     render();
     scheduleSave();
