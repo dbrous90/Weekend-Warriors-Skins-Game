@@ -289,8 +289,14 @@ h1{
   background:#fff;border:1px solid var(--scorecard-line);border-radius:8px;
   padding:10px 12px;margin-bottom:8px;
 }
-.history-item .hdr{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:4px;}
-.history-item .hdr .date{color:var(--ink-soft);font-weight:400;font-family:'Space Mono',monospace;font-size:12px;}
+.history-item .hdr{display:flex;align-items:center;gap:8px;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:4px;}
+.history-item .hdr .date{color:var(--ink-soft);font-weight:400;font-family:'Space Mono',monospace;font-size:12px;margin-right:auto;padding-left:8px;}
+.history-delete{
+  background:none;border:none;color:var(--ink-soft);
+  font-size:16px;line-height:1;cursor:pointer;padding:2px 6px;
+  border-radius:6px;flex-shrink:0;
+}
+.history-delete:hover{background:var(--owe-bg);color:var(--owe);}
 .history-item .htx{font-size:13px;color:var(--ink-soft);line-height:1.5;}
 .history-empty{font-size:13px;color:var(--ink-soft);text-align:center;padding:10px;}
 
@@ -526,7 +532,7 @@ h1{
         ? 'Everyone was even.'
         : round.settlements.map(function(s){ return escapeHtml(s.from) + ' pays ' + escapeHtml(s.to) + ' ' + fmt(s.amtCents); }).join('<br>');
       div.innerHTML =
-        '<div class="hdr"><span>$' + Number(round.pricePerHole).toFixed(2) + ' / hole</span><span class="date">' + escapeHtml(round.date) + '</span></div>' +
+        '<div class="hdr"><span>$' + Number(round.pricePerHole).toFixed(2) + ' / hole</span><span class="date">' + escapeHtml(round.date) + '</span><button class="history-delete" data-round-id="' + round.id + '" title="Delete this week" aria-label="Delete this week">&times;</button></div>' +
         '<div class="htx">' + lines + '</div>';
       historyList.appendChild(div);
     });
@@ -731,6 +737,17 @@ h1{
   historyToggle.addEventListener('click', function(){
     historyToggle.classList.toggle('open');
     historyList.classList.toggle('open');
+  });
+
+  historyList.addEventListener('click', async function(e){
+    if(e.target.classList.contains('history-delete')){
+      var roundId = e.target.getAttribute('data-round-id');
+      if(!confirm('Delete this saved week? This can\'t be undone.')) return;
+      history = history.filter(function(r){ return String(r.id) !== String(roundId); });
+      renderHistory();
+      await saveHistory();
+      setStatus('Week deleted.');
+    }
   });
 
   (async function init(){
